@@ -1,0 +1,57 @@
+{
+  "name": "dsh-video-digest",
+  "version": "1.0.0",
+  "description": "DSH plugin: turn a video link (Bilibili / YouTube / any page) into a transcript-backed summary without leaving the chat.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./core": "./lib/index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "lib/",
+    "locale/",
+    "index.js",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.2"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "video",
+    "summary",
+    "bilibili",
+    "youtube",
+    "transcript",
+    "danmaku"
+  ],
+  "license": "MIT",
+  "author": "hunyu-feng",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunyu-feng/dsh-video-digest.git"
+  },
+  "homepage": "https://github.com/hunyu-feng/dsh-video-digest#readme",
+  "bugs": {
+    "url": "https://github.com/hunyu-feng/dsh-video-digest/issues"
+  }
+}

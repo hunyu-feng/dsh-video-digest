@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Video Digest">
+  <defs>
+    <linearGradient id="vd-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f7cff"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#vd-bg)"/>
+  <rect x="10" y="14" width="44" height="28" rx="7" fill="#ffffff" fill-opacity="0.16"/>
+  <path d="M27 21.5 39.5 28 27 34.5Z" fill="#ffffff"/>
+  <rect x="10" y="44.5" width="30" height="3.5" rx="1.75" fill="#ffffff" fill-opacity="0.9"/>
+  <rect x="10" y="51.5" width="20" height="3.5" rx="1.75" fill="#ffffff" fill-opacity="0.6"/>
+</svg>
