@@ -66,7 +66,16 @@ messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }]
 完全没提"格式不对"，所以这条要记住。见 `lib/summarize.js` 的 `complete()`。
 
 模型路由优先级（`resolveRoute`）：显式参数 → `VIDEO_DIGEST_PROVIDER` + `VIDEO_DIGEST_MODEL`
-→ `agentDefaultModel.currentSelection()` → `llm.listProviders()[0]`。
+→ **插件配置文件** → `agentDefaultModel.currentSelection()` → `llm.listProviders()[0]`。
+
+插件配置文件（只影响本插件，不动全局默认）：
+
+```
+~/.dsh-video-digest/config.json     # 或 $DSH_VIDEO_DIGEST_CONFIG
+{ "provider": "deepseek-account", "model": "deepseek-v4-pro", "reasoningEffort": "max" }
+```
+
+`reasoningEffort` 可选；省略时用模型默认档位。改完不需要重启宿主——每次调用都会重新读文件。
 
 ### 第三个坑：推理模型会先把 token 预算吃掉
 
@@ -77,6 +86,26 @@ messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }]
 所以 `DETAIL_MAX_TOKENS` 现在是 `brief 3000 / standard 5000 / detailed 8000`，并且在
 `finish.reason.kind === 'max-tokens'` 时往 `warnings` 里写一条"总结可能被截断"。
 换更省 token 的模型或调低 reasoningEffort 后，这三个数可以再压。
+
+## 抖音：无头浏览器渲染（以及它的坑）
+
+抖音对普通 HTTP 请求返回的是 72KB 的 JS 挑战脚本（body 为空），`iesdouyin` 旧接口返回空，
+`aweme/v1/web/aweme/detail` 直接 403，oEmbed 也是空。所以 `lib/browser.js` 走浏览器渲染：
+
+```
+msedge --headless=new --no-sandbox --dump-dom --virtual-time-budget=10000 <url>
+```
+
+- 用**临时 profile**（`mkdtemp` 在系统临时目录），不碰用户自己的浏览器配置；不需要 cookie。
+- 解析 `data-e2e="detail-video-info"` 里的 `<h1>` 取文案、`live-avatar` 的 `alt` 取作者、
+  `detail-video-publish-time` 取发布时间，话题从 `#...` 里补全。
+- **坑**：在 DSH 桌面宿主里 `child_process.spawn(msedge.exe)` 会立刻退出（exit 0、无输出、
+  约 100–500ms），走 `ctx.subprocess` 服务也一样，`--no-sandbox` 与换 cwd 都无效；
+  同样的命令在终端里（`node scripts/smoke.mjs <链接>`）完全正常。判断是宿主进程环境不允许
+  直接拉起浏览器。插件因此把抖音失败降级成一条 warning，并给出 CLI 兜底提示。
+- 排查时看 `%TEMP%\dsh-video-digest-render.log`：每次渲染的 `phase`、`mode`（service/node）、
+  `exitCode`、`bytes`、stderr 尾部都在里面。
+- 抖音没有字幕，插件也不做语音转写，所以拿到的是文案/话题/发布时间，而不是逐字稿。
 
 ## 怎么验证
 
