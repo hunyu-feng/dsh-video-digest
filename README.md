@@ -1,5 +1,7 @@
 # dsh-video-digest · 视频速读
 
+[![test](https://github.com/hunyu-feng/dsh-video-digest/actions/workflows/ci.yml/badge.svg)](https://github.com/hunyu-feng/dsh-video-digest/actions/workflows/ci.yml)
+
 把视频链接丢给 DSH，拿回一份**带依据的**总结：它读什么、没读到什么，都会写在结果里。
 
 一个 [DeepSeek Harness](https://github.com/deepseek-ai) 插件，注册两个工具：
