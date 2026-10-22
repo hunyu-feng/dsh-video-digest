@@ -9,6 +9,7 @@ import {
   renderTranscript,
 } from '../lib/evidence.js';
 import {
+  formatElapsed,
   metadataOnlyDigest,
   normalizeDigest,
   parseDigestJson,
@@ -108,9 +109,18 @@ test('renderDigest produces a readable markdown card', () => {
   assert.match(markdown, /\*\*时间线\*\*/);
   assert.match(markdown, /`2:05` 主体/);
   assert.match(markdown, /\*\*依据\*\*：基于弹幕、热评（未获得逐字稿）（置信度 low）/);
+  assert.match(markdown, /\*\*模型\*\*：m/);
+  assert.match(markdown, /\*\*耗时\*\*：1 ms/);
   // Warnings are a bullet list, not a run-on sentence joined by semicolons.
   assert.match(markdown, /\*\*说明\*\*\n- /);
   assert.match(markdown, /\*\*链接\*\*：https:\/\/www\.bilibili\.com/);
+});
+
+test('formatElapsed renders readable wall time', () => {
+  assert.equal(formatElapsed(0), '');
+  assert.equal(formatElapsed(820), '820 ms');
+  assert.equal(formatElapsed(12_400), '12.4 秒');
+  assert.equal(formatElapsed(65_000), '1 分 05 秒');
 });
 
 test('confidenceOf and describeBasis track the evidence actually found', () => {
