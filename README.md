@@ -13,7 +13,10 @@
 | `video_digest` | 链接 → 抓取可读材料 → 调用当前默认模型 → 结构化总结（标题、一句话结论、正文、要点、时间线、依据、置信度） |
 | `video_transcript` | 链接 → 只取带时间码的字幕逐字稿，不调用模型 |
 
-支持 B 站（BV/av、多分 P、`b23.tv` 短链）、YouTube，以及任何带视频元信息的普通网页；装了 yt-dlp 之后还能抓更多站点的字幕。
+支持 B 站（BV/av、多分 P、`b23.tv` 短链）、YouTube、**抖音**（用本机 Edge/Chrome 无头渲染页面，取文案与话题），以及任何带视频元信息的普通网页；装了 yt-dlp 之后还能抓更多站点的字幕。
+
+> 抖音没有公开字幕接口，插件也不做语音转写，所以抖音链接给的是「页面文案 + 话题 + 发布信息」的提炼，不是逐字总结。
+> 另外，DSH 桌面宿主进程可能不允许直接拉起浏览器（表现为渲染返回空页面）：此时可在终端跑 `node scripts/smoke.mjs <链接>` 取材料，或把文案贴给模型。
 
 ## 它到底"看"了什么
 
@@ -71,6 +74,17 @@
 | `BILI_COOKIE` | B 站 `SESSDATA`（可只填值，也可填完整 cookie 串）。设置后解锁字幕逐字稿与官方 AI 总结 |
 | `YT_DLP_PATH` | 指向 `yt-dlp` 可执行文件。设置后 YouTube 及其他站点走 yt-dlp 抓字幕；B 站没拿到字幕时也会尝试用它补 |
 | `VIDEO_DIGEST_PROVIDER` + `VIDEO_DIGEST_MODEL` | 覆盖总结用的模型路由；默认跟随 DSH 当前的 `agentDefaultModel` |
+| `DSH_VIDEO_DIGEST_CONFIG` | 覆盖下面这个插件配置文件的路径 |
+
+**单独给本插件指定模型**（不影响 DSH 全局默认）：
+
+```json
+// ~/.dsh-video-digest/config.json
+{ "provider": "deepseek-account", "model": "deepseek-v4-pro", "reasoningEffort": "max" }
+```
+
+优先级：工具参数 → 环境变量 → 这个配置文件 → `agentDefaultModel` → 第一个已注册 provider。
+`reasoningEffort` 可省略，省略时用模型自己的默认档位。
 
 插件自己**不保存任何 API key**：总结走 DSH 已经在用的 provider/model，所以你换了默认模型它也照常工作。
 
