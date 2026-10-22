@@ -1,5 +1,7 @@
 # dsh-video-digest · 视频速读
 
+> 本地开发备忘（怎么改、改完怎么生效、踩过的坑）：见 [NOTES.md](./NOTES.md)。
+
 [![test](https://github.com/hunyu-feng/dsh-video-digest/actions/workflows/ci.yml/badge.svg)](https://github.com/hunyu-feng/dsh-video-digest/actions/workflows/ci.yml)
 
 把视频链接丢给 DSH，拿回一份**带依据的**总结：它读什么、没读到什么，都会写在结果里。

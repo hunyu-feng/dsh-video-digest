@@ -7,6 +7,9 @@
  *
  * The plugin holds no API keys: summaries run on the provider/model the harness
  * already uses (`agentDefaultModel`), so it keeps working after a model switch.
+ *
+ * Local development notes (reload rules, env vars, known limits): see NOTES.md
+ * in the package root.
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import { runDigest, readTranscript } from './lib/index.js';
