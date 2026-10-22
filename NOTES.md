@@ -20,8 +20,8 @@
 
 ## 本地挂载状态（desktop profile）
 
-- 源码目录：`C:\Users\wang7\Documents\deepseek-harness\default-workspace\dsh-video-digest`
-- `package.json` 依赖：`"dsh-video-digest": "file:C:/Users/wang7/Documents/deepseek-harness/default-workspace/dsh-video-digest"`
+- 源码目录：`C:\Users\wang7\Documents\deepseek-harness\default-workspace\plugins\dsh-video-digest`
+- `package.json` 依赖：`"dsh-video-digest": "file:C:/Users/wang7/Documents/deepseek-harness/default-workspace/plugins/dsh-video-digest"`
 - `dsh.profile.bundles` 中包含 `dsh-video-digest`
 - 入口 `index.js`（`inject = ['tools']`），实现全在 `lib/`
 
@@ -68,6 +68,16 @@ messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }]
 模型路由优先级（`resolveRoute`）：显式参数 → `VIDEO_DIGEST_PROVIDER` + `VIDEO_DIGEST_MODEL`
 → `agentDefaultModel.currentSelection()` → `llm.listProviders()[0]`。
 
+### 第三个坑：推理模型会先把 token 预算吃掉
+
+默认模型是带 reasoning 的 `deepseek-flash`（`reasoningEffort: max`）。`maxTokens` 只给
+900 / 1600 时，思考阶段就把额度用完，`text-delta` 一个都没有，工具会报
+`E_MODEL_EMPTY`（"模型返回了空内容"）；给到 2400 时能出正文，但 JSON 被截断在中间。
+
+所以 `DETAIL_MAX_TOKENS` 现在是 `brief 3000 / standard 5000 / detailed 8000`，并且在
+`finish.reason.kind === 'max-tokens'` 时往 `warnings` 里写一条"总结可能被截断"。
+换更省 token 的模型或调低 reasoningEffort 后，这三个数可以再压。
+
 ## 怎么验证
 
 ```bash
@@ -103,3 +113,5 @@ GUI 里跑一次真实视频：`video_digest` 传一个 B 站 BV 链接，看返
 
 - 2026-10-22：目录 `video-digest` → `dsh-video-digest`，与包名/仓库名统一
   （改名同时也换掉了 ESM 模块路径，让修复后的代码在不停机的情况下上线）。
+- 2026-10-22（晚）：工作区被清空、profile 被重置，源码从 GitHub tarball 恢复到
+  `plugins/dsh-video-digest` 后重新 `install_bundle`；同时把 token 预算调大（见上文第三个坑）。
